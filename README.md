@@ -135,7 +135,7 @@ Haiku is packaged as an AMD module, but it's dependency-free, so it's simple to
 install: just drop it in your root JavaScript folder, and `require` away:
 
     require(["haiku"], function(haiku) {
-        var raw_html = tao.expand("section#main+aside#related", true);
+        document.body.appendChild( haiku.expand("section#main+aside#related") );
     });
 
 
@@ -203,7 +203,8 @@ manipulation of the node (say, add an event handler or two) prior to insertion
 into the tree:
 
 	function createPerson(dataObject) {
-		return haiku.create("li.person[data-item-key=$id;]>a.external[href=http://foo.com?personid=$id;>{$name;}", dataObject);
+		var tmpl = "li.person[data-item-key=$id;]>a.external[href=http://foo.com?personid=$id;>{$name;}";
+		return haiku.create(tmpl, dataObject);
 		// returns the DOM Element for the <li>
 	}
 
