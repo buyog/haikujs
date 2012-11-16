@@ -1,4 +1,4 @@
-# haikujs
+# haiku.js
 
     Haiku makes DOM trees
     so simple to generate,
