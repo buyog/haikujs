@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Haiku.js Test Page</title>
+    <meta http-equiv='Content-Type' content="text/html; charset=UTF-8" />
+    <style type="text/css">
+        textarea {
+            background: white;
+            border: 1px inset gray;
+            width: 320px; height: 60px;
+        }
+        input[type=text] { width: 320px; }
+    </style>
+  </head>
+  <body>
+    <h1>Haiku.js Test Page</h1>
+
+    <h2>Try it out:</h2>
+    <input type="text" id="src2" value="div#page>div.logo+ul#navigation>li>a" />
+    <button onclick="convert(2);">Parse</button><br/>
+    <textarea id="tgt2"></textarea>
+
+    <script src="../../require.js"></script>
+    <script>
+        window.dataObject = {
+            'foo': 'value of foo',
+            'bar': 12
+        };
+        require.config({
+            baseUrl: '..'
+        });
+        require(["haikujs/haiku"], function(haiku) {
+            window.haiku = haiku;
+            window.convert = function(idx) {
+                var src = document.getElementById('src'+idx),
+                    tgt = document.getElementById('tgt'+idx);
+                if (src && tgt) {
+                    tgt.textContent = tgt.value = haiku.expand(src.value, dataObject, true);
+                }
+            }
+        });
+    </script>
+  </body>
+</html>

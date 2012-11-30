@@ -65,6 +65,8 @@ define([],
                         val = matches[i].split('=');
                         if (val.length == 2) {
                             el.setAttribute(val[0], val[1]);
+                        } else if (val.length > 2) {
+                            el.setAttribute(val[0], val.slice(1).join('='));
                         }
                     }
                 }
@@ -144,7 +146,7 @@ define([],
         function _createElement(expression, dataObj) {
             var exp_with_values = _supplant(expression, dataObj),
                 tags = exp_with_values.split(_posRex);
-            return _buildElement(tags[0], dataObj);
+            return _buildElement(exp_with_values, dataObj);
         }
 
 
