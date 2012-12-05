@@ -144,9 +144,8 @@ define([],
         }
 
         function _createElement(expression, dataObj) {
-            var exp_with_values = _supplant(expression, dataObj),
-                tags = exp_with_values.split(_posRex);
-            return _buildElement(exp_with_values, dataObj);
+            var expanded = _expand(expression, dataObj);
+            return (expanded && expanded.childNodes.length) ? expanded.childNodes[0] : null;
         }
 
 
