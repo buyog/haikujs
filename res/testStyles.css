@@ -1,0 +1,29 @@
+body { background-color: #D0D0D0; }
+header h1 {  }
+header img {
+    position: absolute;
+    top: 1em; right: 0;
+    z-index: -10;
+}
+.instructions {
+    background-color: #eee;
+    border: 1px inset #777;
+    padding: 5px; margin: 0 0 1em;
+    opacity: 0.8;
+
+       -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+            border-radius: 5px;
+
+       -moz-box-shadow: 0 3px 3px #777;
+    -webkit-box-shadow: 0 3px 3px #777;
+            box-shadow: 0 3px 3px #777;
+}
+textarea, #container {
+    background-color: white;
+    border: 1px inset gray;
+    min-width: 320px; min-height: 60px;
+    width: 90%;
+}
+input[type=text] { min-width: 320px; width: 70%; }
+code { background-color: #bbb; }

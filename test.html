@@ -2,42 +2,127 @@
 <html>
   <head>
     <title>Haiku.js Test Page</title>
-    <meta http-equiv='Content-Type' content="text/html; charset=UTF-8" />
-    <style type="text/css">
-        textarea {
-            background: white;
-            border: 1px inset gray;
-            width: 320px; height: 60px;
-        }
-        input[type=text] { width: 320px; }
-    </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="res/testStyles.css"/>
   </head>
   <body>
-    <h1>Haiku.js Test Page</h1>
+    <header>
+        <h1>Haiku.js Test Page</h1>
+        <img id="title_logo" src="res/logo.png"/>
+    </header>
 
-    <h2>Try it out:</h2>
-    <input type="text" id="src2" value="div#page>div.logo+ul#navigation>li>a" />
-    <button onclick="convert(2);">Parse</button><br/>
-    <textarea id="tgt2"></textarea>
+    <div class="instructions">
+        <p><em>Note on the difference between <code>create</code> and <code>expand</code></em>:</p>
+
+        <p><code>expand</code> generates an arbitrary stream of DOM nodes as a DOM Fragment, which can then
+        be serialized to raw HTML or appended to a container element.</p>
+        <p><code>create</code> also generates one or more DOM nodes, but returns a reference to the first DOM
+        node in the provided spec string. So if you pass <code>create</code> a spec that creates multiple
+        top-level nodes (e.g. "header&gt;h1&lt;aside&gt;p"), you'll only get back a reference to the first one.</p>
+    </div>
+
+    <select id="prefabs">
+        <option value="">(sample specs)</option>
+        <option
+            value="img[src=res/logo.png]+ul>li{List item 1}+li{List item 2}">
+            Logo + list</option>
+        <option
+            value="header[style=text-align:center]>h1{This is My Header}+h2{This is my Subtitle}">
+            Fancy header</option>
+        <option
+            value="section.main>p{This is the main content}<aside>p{(This is just an aside)}">
+            Main + aside</option>
+        <option
+            value="blockquote#quote1.fancy.gothic{My big fancy Gothic blockquote}">
+            ID &amp; classes</option>
+        <option
+            value="a[href=$url;]>{$title;}">
+            Template substitution</option>
+        <option
+            value="div>p{intro paragraph}+p{main paragraph}">
+            Siblings</option>
+        <option
+            value="p>{A }+em{simple}+{ example}">
+            Fancy text</option>
+        <option
+            value="a[style=color:green,title=External link,href=http://foo.com,data-type=permalink]{My hyperlink}">
+            Custom attributes</option>
+    </select>
+
+    <input type="text" id="src" value="p{Try Haiku by editing this spec string.}" />
+    <button id="btnExpand">Expand</button> <button id="btnCreate">Create</button> <br/>
+
+    <label>Rendered HTML:</label><br/>
+    <div id="container"></div>
+
+    <label>Raw source code:</label><br/>
+    <textarea id="tgt"></textarea>
+
 
     <script src="../../require.js"></script>
     <script>
+        function addEvent(tgt, type, func, useCapture) {
+        // follows the API of the standard addEventListener, but abstracts it to work cross-browser
+            var capture = useCapture || false;
+            if (tgt.addEventListener) {
+                // modern standards-based browsers
+                tgt.addEventListener(type, func, capture);
+            } else if (tgt.attachEvent) {
+                // IE < 9
+                tgt.attachEvent('on'+type, func);
+            } else if (typeof tgt['on'+type] !== 'undefined') {
+                // old school (can assign to the element's event handler this way, provided it's not undefined)
+                var oldfunc = tgt['on'+type];
+                if (typeof oldfunc === 'function') {
+                    tgt['on'+type] = function() { oldfunc(); func(); };
+                } else {
+                    tgt['on'+type] = func;
+                }
+            } else {
+                alert ("Can't add this event type: " + type + " to this element: " + tgt);
+            }
+        }
+
         window.dataObject = {
-            'foo': 'value of foo',
-            'bar': 12
+            'title': 'Haiku.js repo on Github',
+            'url': 'https://github.com/buyog/haikujs'
         };
         require.config({
             baseUrl: '..'
         });
         require(["haikujs/haiku"], function(haiku) {
-            window.haiku = haiku;
-            window.convert = function(idx) {
-                var src = document.getElementById('src'+idx),
-                    tgt = document.getElementById('tgt'+idx);
+            var cbo = document.getElementById('prefabs'),
+                src = document.getElementById('src'),
+                tgt = document.getElementById('tgt'),
+                container = document.getElementById('container');
+
+            addEvent(cbo, "change", function(e) {
+                if (this.selectedIndex) {
+                    src.value = this.selectedOptions[0].value;
+                }
+            })
+
+            addEvent(document.getElementById("btnExpand"), "click", function() {
                 if (src && tgt) {
                     tgt.textContent = tgt.value = haiku.expand(src.value, dataObject, true);
+                    if (container) {
+                        container.innerHTML = '';
+                        container.appendChild( haiku.expand(src.value, dataObject) );
+                    }
                 }
-            }
+            });
+
+            addEvent(document.getElementById("btnCreate"), "click", function() {
+                if (src && container) {
+                    container.innerHTML = '';
+                    container.appendChild( haiku.create(src.value, dataObject) );
+
+                    if (tgt) {
+                        tgt.textContent = tgt.value = container.innerHTML;
+                    }
+                }
+            });
+
         });
     </script>
   </body>
