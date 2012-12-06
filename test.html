@@ -97,8 +97,8 @@
                 container = document.getElementById('container');
 
             addEvent(cbo, "change", function(e) {
-                if (this.selectedIndex) {
-                    src.value = this.selectedOptions[0].value;
+                if (cbo.selectedIndex) {
+                    src.value = cbo.options[cbo.selectedIndex].value;
                 }
             })
 
