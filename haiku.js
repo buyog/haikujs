@@ -3,7 +3,7 @@
 //   (see http://code.google.com/p/zen-coding/)
 //
 // author: Ryan Corradini
-// date: 8 Nov 2012
+// date: 6 Dec 2012
 // license: MIT
 //
 
@@ -32,7 +32,7 @@ define([],
         "use strict";
 
         var _tagRex   = /^[a-z]+[1-6]?/i,
-            _posRex   = /[>|<|\+]+/g,
+            _posRex   = /[><\+]+/g,
             _idRex    = /#[_a-z]+[_a-z0-9-]*/i,
             _classRex = /\.-?[_a-z]+[_a-z0-9-]*/gi,
             _textRex  = /{[^}]+}/,
@@ -134,7 +134,7 @@ define([],
                                 break;
                             default:
                                 // unrecognized insert level operation
-                                console.log('next posCode:', posCode);
+                                console.warn('unrecognized position delimiter:', posCode);
                         }
                     }
                 }
