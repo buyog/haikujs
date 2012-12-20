@@ -32,7 +32,7 @@ define([],
         "use strict";
 
         var _tagRex   = /^[a-z]+[1-6]?/i,
-            _posRex   = /[><\+]+/g,
+            _posRex   = /[><\+]/g,
             _idRex    = /#[_a-z]+[_a-z0-9-]*/i,
             _classRex = /\.-?[_a-z]+[_a-z0-9-]*/gi,
             _textRex  = /{[^}]+}/,
@@ -117,25 +117,25 @@ define([],
                 child = _buildElement(tags[i]);
                 if (child) {
                     _cur.appendChild(child);
-                    posCode = _posRex.exec(exp_with_values);
+                }
+                posCode = _posRex.exec(exp_with_values);
 
-                    if (posCode && posCode.length) {
-                        switch (posCode[0]) {
-                            case '<':
-                                // jump back up to the previous insertion level
-                                _cur = _cur.parentNode;
-                                break;
-                            case '>':
-                                // insert next element into this new child
-                                _cur = child;
-                                break;
-                            case '+':
-                                // no change in insert level
-                                break;
-                            default:
-                                // unrecognized insert level operation
-                                console.warn('unrecognized position delimiter:', posCode);
-                        }
+                if (posCode && posCode.length) {
+                    switch (posCode[0]) {
+                        case '<':
+                            // jump back up to the previous insertion level
+                            _cur = _cur.parentNode;
+                            break;
+                        case '>':
+                            // insert next element into this new child
+                            _cur = child;
+                            break;
+                        case '+':
+                            // no change in insert level
+                            break;
+                        default:
+                            // unrecognized insert level operation
+                            console.warn('unrecognized position delimiter:', posCode);
                     }
                 }
             }

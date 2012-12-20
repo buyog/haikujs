@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Haiku.js Test Page</title>
+    <title>haiku.js Test Page</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="main.css" />
     <link rel="stylesheet" href="res/testStyles.css"/>
   </head>
   <body>
-    <header>
-        <h1>Haiku.js Test Page</h1>
-        <img id="title_logo" src="res/logo.png"/>
-    </header>
+    <h1>Haiku.js Test Page</h1>
 
     <div class="instructions">
         <p><em>Note on the difference between <code>create</code> and <code>expand</code></em>:</p>
@@ -50,6 +48,9 @@
         <option
             value="li{sub1 | sub2 | sub3}">
             Pipe bug (Github issue #3)</option>
+        <option
+            value="table[border=1]>tr>td>a[href=#]{first (linked)}<td{second}+td>em{third (em)}<<tr>td[colspan=3]{second row}">
+            Element ascent bug (Github issue #6)</option>
     </select>
 
     <input type="text" id="src" value="p{Try Haiku by editing this spec string.}" />
