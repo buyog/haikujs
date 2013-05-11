@@ -209,6 +209,11 @@ into the tree:
 	}
 
 
+## Credits
+
+Minified version generated via [UglifyJS](https://github.com/mishoo/UglifyJS2/), using Marijn Haverbeke's [online tool](http://marijnhaverbeke.nl/uglifyjs).
+
+
 ## Disclaimer
 
 So far, this is more or less a subset of Zen Coding's power &mdash; I haven't 
