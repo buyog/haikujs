@@ -7,7 +7,7 @@
 ## Wha...?
 
 There are plenty of libraries for making it easier to create arbitrary DOM nodes, 
-but I couldn't find one that used [Zen Coding](code.google.com/p/zen-coding/) 
+but I couldn't find one that used [Zen Coding](http://code.google.com/p/zen-coding/) 
 syntax, which I've kinda fallen in love with lately. It can generate single 
 element nodes, DOM Fragments, or even a raw string of HTML, suitable for 
 insertion via `innerHTML`.
@@ -16,6 +16,16 @@ It's intended to be a lightweight replacement for the standard DOM method of
 creating new HTML structures, without the overhead of a full-blown templating
 system like [Mustache](http://mustache.github.com/) or 
 [Dust.js](http://akdubya.github.com/dustjs/) or the like.
+
+## Installation
+
+Haiku is packaged as an AMD module, but it's dependency-free, so it's simple to 
+install: just drop it in your root JavaScript folder, and `require` away:
+
+    require(["haiku"], function(haiku) {
+        document.body.appendChild( haiku.expand("section#main+aside#related") );
+    });
+
 
 ## Format
 
@@ -128,16 +138,6 @@ Specifies attributes other than class and id (comma-separated if more than one):
 
 
 ## Usage
-
-### AMD support
-
-Haiku is packaged as an AMD module, but it's dependency-free, so it's simple to 
-install: just drop it in your root JavaScript folder, and `require` away:
-
-    require(["haiku"], function(haiku) {
-        document.body.appendChild( haiku.expand("section#main+aside#related") );
-    });
-
 
 ### Multiple Nodes
 
