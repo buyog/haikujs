@@ -53,6 +53,12 @@ define([],
                 i, matches, val,
                 el = tag ? document.createElement(tag[0]) : null;
             if (el) {
+                // add element text node(s)
+                if (_textRex.test(spec)) {
+                    matches = _textRex.exec(spec);
+                    el.appendChild(document.createTextNode( matches[0].slice(1, -1) ));
+                }
+
                 // add element attributes
                 if (_attrsRex.test(spec)) {
                     // only one; if there are multiples, they're ignored
@@ -84,12 +90,6 @@ define([],
                         el.classList.add(matches[i].slice(1));
                     }
                     matches = _classRex.exec(spec);
-                }
-
-                // add element text node(s)
-                if (_textRex.test(spec)) {
-                    matches = _textRex.exec(spec);
-                    el.appendChild(document.createTextNode( matches[0].slice(1, -1) ));
                 }
 
                 // TBD: check for element multipliers (e.g. ul>li*5)
