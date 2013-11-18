@@ -38,12 +38,13 @@ define([],
             _textRex  = /{[^}]+}/,
             _attrsRex = /\[[^\]]*\]/;
 
-        function _supplant(str, args) {
+        function _supplant(str, args, defaultVal) {
         // adapted from Douglas Crockford's Remedial JavaScript
             return str.replace(/\$([^$]*);/g,
                 function (a, b) {
-                    var r = args[b];
-                    return typeof r === 'string' || typeof r === 'number' ? r : a;
+                    var r = args[b] || defaultVal,
+                        rtype = typeof r;
+                    return rtype === 'string' || rtype === 'number' ? r : "("+rtype+")";
                 }
             );
         }
@@ -111,7 +112,7 @@ define([],
             var _frag = (serialize) ? document.createElement('div') : document.createDocumentFragment(),
                 _cur = _frag,
                 child = null,
-                exp_with_values = _supplant(expression, dataObj),
+                exp_with_values = _supplant(expression, dataObj, ""),
                 i, posCode, tags = exp_with_values.split(_posRex);
             for (i=0; i<tags.length; i++) {
                 child = _buildElement(tags[i]);
