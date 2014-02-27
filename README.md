@@ -60,7 +60,8 @@ based on a caller-provided data object (just basic parameter substitution right 
 <table><tr>
   <td><code>a[href=http://me.com?id=$link;]>{$label;}</code></td>
   <td><span>&rArr;</span></td>
-  <td><code>&lt;a href="http://me.com?id=9001"&gt;Goku's power level&lt;/a&gt;</code></td>
+  <td><code>&lt;a href="http://me.com?id=9001"&gt;<br/>
+    &nbsp;&nbsp;Goku's power level&lt;/a&gt;</code></td>
 </tr></table>
 
 
