@@ -3,7 +3,7 @@
 //   (see http://code.google.com/p/zen-coding/)
 //
 // author: Ryan Corradini
-// date: 6 Dec 2012
+// last update: 19 May 2014
 // license: MIT
 //
 
@@ -115,7 +115,7 @@ define([],
                 exp_with_values = _supplant(expression, dataObj, ""),
                 i, posCode, tags = exp_with_values.split(_posRex);
             for (i=0; i<tags.length; i++) {
-                child = _buildElement(tags[i]);
+                child = _buildElement(tags[i].trim());
                 if (child) {
                     _cur.appendChild(child);
                 }
