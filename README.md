@@ -57,12 +57,17 @@ Specifies the CSS class for an element *(multiple operands allowed)*:
 Provides simple [Supplant](http://javascript.crockford.com/remedial.html)-style templating
 based on a caller-provided data object (just basic parameter substitution right now):
 
-<table><tr>
-  <td><code>a[href=http://me.com?id=$link;]>{$label;}</code></td>
-  <td><span>&rArr;</span></td>
-  <td><code>&lt;a href="http://me.com?id=9001"&gt;<br/>
-    &nbsp;&nbsp;Goku's power level&lt;/a&gt;</code></td>
-</tr></table>
+<table><tbody>
+  <tr>
+    <td><code>a[href=http://me.com?id=$link;]&gt;{$label;}</code></td>
+    <td rowspan='2'>&rArr;</td>
+    <td rowspan='2'>
+      <code>&lt;a href="http://me.com?id=9001"&gt;Goku's power level&lt;/a&gt;</code>
+    </td>
+  </tr>
+  <tr><td>{ "link":9001, "label":"Goku's power level }</td></tr>
+</tbody></table>
+
 
 
 ### Child operator (&ldquo;&gt;&rdquo;)
@@ -70,11 +75,9 @@ based on a caller-provided data object (just basic parameter substitution right 
 Makes the following element a child of the preceding one:
 
 <table><tr>
-  <td><code>ul>li</code></td>
-  <td><span>&rArr;</span></td>
-  <td><code>&lt;ul&gt;<br/>
-      &nbsp;&nbsp;&lt;li&gt;&lt;/li&gt;<br/>
-      &lt;/ul&gt;</code></td>
+  <td><code>ul&gt;li</code></td>
+  <td>&rArr;</td>
+  <td><code>&lt;ul&gt;&nbsp;&lt;li&gt;&lt;/li&gt;&nbsp;&lt;/ul&gt;</code></td>
 </tr></table>
 
 
@@ -84,11 +87,8 @@ Makes the following element a sibling of the preceding one:
 
 <table><tr>
   <td><code>div&gt;p#intro+p#main</code></td>
-  <td><span>&rArr;</span></td>
-  <td><code>&lt;div&gt;<br/>
-       &nbsp;&nbsp;&lt;p id="intro"&gt;&lt;/p&gt;<br/>
-       &nbsp;&nbsp;&lt;p id="main"&gt;&lt;/p&gt;<br/>
-       &lt;/div&gt;</code></p></td>
+  <td>&rArr;</td>
+  <td><code>&lt;div&gt;&nbsp;&lt;p id="intro"&gt;&lt;/p&gt;&nbsp;&lt;p id="main"&gt;&lt;/p&gt;&nbsp;&lt;/div&gt;</code></p></td>
 </tr></table>
 
 
@@ -99,11 +99,8 @@ up one level in the tree):
 
 <table><tr>
   <td><code>header&gt;h1&lt;section.main</code></td>
-  <td><span>&rArr;</span></td>
-  <td><code>&lt;header&gt;<br/>
-       &nbsp;&nbsp;&lt;h1&gt;&lt;/h1&gt;<br/>
-       &lt;/header&gt;<br/>
-       &lt;section class="main"&gt;&lt;/section&gt;</code></td>
+  <td>&rArr;</td>
+  <td><code>&lt;header&gt;&lt;h1&gt;&lt;/h1&gt;&lt;/header&gt;&nbsp;&lt;section class="main"&gt;&lt;/section&gt;</code></td>
 </tr></table>
 
 
@@ -113,12 +110,8 @@ Specifies the contents of a text node:
 
 <table><tr>
   <td><code>p>{A }+em{simple}+{ example}</code></td>
-  <td><span>&rArr;</span></td>
-  <td><code>&lt;p&gt;<br/>
-       &nbsp;&nbsp;"A "<br/>
-       &nbsp;&nbsp;&lt;em&gt;simple&lt;/em&gt;<br/>
-       &nbsp;&nbsp;" example"<br/>
-       &lt;/p&gt;</code></td>
+  <td>&rArr;</td>
+  <td><code>&lt;p&gt;A &lt;em&gt;simple&lt;/em&gt; example&lt;/p&gt;</code></td>
 </tr></table>
 
 
@@ -128,13 +121,8 @@ Specifies attributes other than class and id (comma-separated if more than one):
 
 <table><tr>
   <td><code>a#myId.myClass[href=http://foo.com,data-type=permalink]</code></td>
-  <td><span>&rArr;</span></td>
-  <td><code>&lt;a <br/>
-       &nbsp;&nbsp;href="foo.com"<br/>
-       &nbsp;&nbsp;data-type="permalink"<br/>
-       &nbsp;&nbsp;id="myId"<br/>
-       &nbsp;&nbsp;class="myClass"<br/>
-       /&gt;</code></td>
+  <td>&rArr;</td>
+  <td><code>&lt;a href="foo.com" data-type="permalink" id="myId" class="myClass" /&gt;</code></td>
 </tr></table>
 
 
