@@ -91,36 +91,38 @@ define([],
             return working.replace(/__CLOSEBRACKET__/gi, "]");
         }
 
-        function _sanitizeData(obj) {
+        function _sanitizeData(obj, depthLimit) {
             var sanitized = null;
             if (!obj) return null;
             if (obj.__SANITIZED) return obj;
             if (Array.isArray(obj)) {
                 sanitized = [];
                 for (var i=0; i<obj.length; i++) {
-                    sanitized[i] = _sanitizeData(obj[i]);
+                    sanitized[i] = _sanitizeData(obj[i], depthLimit);
                 }
             } else {
-                if (typeof obj === "object") {
-                    sanitized = {
-                        __SANITIZED: true
-                    };
-                    Object.keys(obj).forEach(function sanitizeKeyVal(key){
-                        switch (typeof obj[key]) {
-                            case "string":
-                            case "object":
-                                sanitized[key] = _sanitizeData(obj[key]);
-                                break;
+                switch (typeof obj) {
+                    case "string":
+                        sanitized = _escapeControlChars(obj);
+                        break;
 
-                            default:
-                                // any other data types can stay as they are
-                                sanitized[key] = obj[key];
-                                break;
+                    case "object":
+                        sanitized = {
+                            __SANITIZED: true
+                        };
+                        if (depthLimit > 0) {
+                            Object.keys(obj).forEach(function sanitizeKeyVal(key){
+                                sanitized[key] = _sanitizeData(obj[key], depthLimit-1);
+                            });
+                        } else {
+                            sanitized.__NORECURSE = true;
                         }
-                    });
-                
-                } else if (typeof obj === "string") {
-                    sanitized = _escapeControlChars(obj);
+                        break;
+
+                    default:
+                        // any other data types can stay as they are
+                        sanitized = obj;
+                        break;
                 }
             }
             return sanitized;
@@ -200,7 +202,7 @@ define([],
             var _frag = (serialize) ? document.createElement('div') : document.createDocumentFragment(),
                 _cur = _frag,
                 child = null,
-                exp_with_values = _supplant( expression, _sanitizeData(dataObj), ""),
+                exp_with_values = _supplant( expression, _sanitizeData(dataObj, 1), ""),
                 i, posCode, tags = exp_with_values.split(_posRex);
             for (i=0; i<tags.length; i++) {
                 child = _buildElement(tags[i].trim());
