@@ -114,6 +114,7 @@ define([],
 
                             default:
                                 // any other data types can stay as they are
+                                sanitized[key] = obj[key];
                                 break;
                         }
                     });
