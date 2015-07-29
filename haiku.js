@@ -43,6 +43,7 @@ define([],
             _attrsRex = /\[[^\]]*\]/;
 
         var _templateMap = {};
+        var _conditionalsMaps = {};
 
     // HELPER FUNCTIONS
 
@@ -254,6 +255,82 @@ define([],
             return _templateMap[templateId] || null;
         }
 
+        function _lookupTemplateByMap(mapId, record) {
+            var map = _conditionalsMaps[mapId];
+            var checkValue;
+            if (!map || !record) return null;
+            if (record && map.fieldName) checkValue = record[map.fieldName];
+
+            if (checkValue.toString() && map.valueMap.hasOwnProperty(checkValue)) {
+                return _lookupTemplate(map.valueMap[checkValue]);
+            }
+
+            return _lookupTemplate(map.defaultTemplate) || null;
+        }
+
+        function _bindChildNodes(nd, record) {
+            var fieldName = nd.getAttribute("data-children-binding");
+            var i, tmpl, value, fragment;
+            if (fieldName && record.hasOwnProperty(fieldName)) {
+                value = record[fieldName];
+                if (value && value.length !== undefined) {
+                    if (nd.hasAttribute("data-template")) {
+                        tmpl = _lookupTemplate(nd.getAttribute("data-template"));
+
+                        if (tmpl) {
+                            nd.innerHTML = "";
+                            for (i=0; i<value.length; i++) {
+                                fragment = _createElement(tmpl, value[i]);
+                                nd.appendChild( fragment );
+                                _bindToRecord(fragment, value[i]);
+                            }
+                        }
+
+                    } else if (nd.hasAttribute("data-template-map")) {
+                        var tmplMap = nd.getAttribute("data-template-map");
+                        for (i=0; i<value.length; i++) {
+                            tmpl = _lookupTemplateByMap(tmplMap, value[i]);
+                            if (tmpl) {
+                                fragment = _createElement(tmpl, value[i]);
+                                nd.appendChild( fragment );
+                                _bindToRecord(fragment, value[i]);
+                            }
+                        }
+                    }
+                }
+            } else {
+                console.warn("Data children binding: '" + fieldName + "' not found.");
+            }
+
+            if (nd.hasAttribute("data-children-footer")) {
+                tmpl = _lookupTemplate(nd.getAttribute("data-children-footer"));
+                if (tmpl) {
+                    nd.appendChild( _createElement(tmpl, record) );
+                }
+            }
+        }
+
+        function _bindField(nd, record) {
+            var fieldName = nd.getAttribute("data-binding");
+            var value, valueStr;
+
+            if (fieldName === "%self") {
+                valueStr = nd.getAttribute("data-value-string");
+                _setNodeValue(nd, _expandValueString(valueStr, record));
+
+            } else {
+
+                if (fieldName && record.hasOwnProperty(fieldName)) {
+                    value = record[fieldName];
+                    if (value !== undefined) {
+                        _setNodeValue(nd, value);
+                    }
+                } else {
+                    console.warn("Data binding: '" + fieldName + "' ");
+                }
+            }
+        }
+
         function _bindToRecord(view, record) {
             var bindings;
 
@@ -261,57 +338,17 @@ define([],
 
             // data-children-binding (templatized child nodes, bound to an array)
             bindings = view.querySelectorAll("[data-children-binding]");
-            Array.prototype.forEach.call(bindings, function bindChildTemplate(nd) {
-                var fieldName = nd.getAttribute("data-children-binding");
-                var tmpl, value, fragment, childFooterTemplate;
-                if (fieldName && record.hasOwnProperty(fieldName)) {
-                    value = record[fieldName];
-                    if (value && value.length !== undefined) {
-                        tmpl = _lookupTemplate(nd.getAttribute("data-template"));
-                        if (tmpl) {
-                            nd.innerHTML = "";
-                            for (var i=0; i<value.length; i++) {
-                                fragment = _createElement(tmpl, value[i]);
-                                nd.appendChild( fragment );
-                                _bindToRecord(fragment, value[i]);
-                            }
-                        }
-                    }
-                } else {
-                    console.warn("Data children binding: '" + fieldName + "' not found.");
-                }
-
-                childFooterTemplate = nd.getAttribute("data-children-footer");
-                if (childFooterTemplate) {
-                    tmpl = _lookupTemplate(nd.getAttribute("data-children-footer"));
-                    if (tmpl) {
-                        nd.appendChild( _createElement(tmpl, record) );
-                    }
-                }
-            });
+            Array.prototype.forEach.call(bindings, function(nd) { _bindChildNodes(nd, record); });
 
             // data-binding (single node values)
             bindings = view.querySelectorAll("[data-binding]");
-            Array.prototype.forEach.call(bindings, function bindField(nd) {
-                var fieldName = nd.getAttribute("data-binding");
-                var value, valueStr;
+            Array.prototype.forEach.call(bindings, function(nd) { _bindField(nd, record); });
+        }
 
-                if (fieldName === "%self") {
-                    valueStr = nd.getAttribute("data-value-string");
-                    _setNodeValue(nd, _expandValueString(valueStr, record));
-
-                } else {
-
-                    if (fieldName && record.hasOwnProperty(fieldName)) {
-                        value = record[fieldName];
-                        if (value !== undefined) {
-                            _setNodeValue(nd, value);
-                        }
-                    } else {
-                        console.warn("Data binding: '" + fieldName + "' ");
-                    }
-                }
-            });
+        function _addConditionalsMap(name, map) {
+            if (!_conditionalsMaps.hasOwnProperty(name)) {
+                _conditionalsMaps[name] = map;
+            }
         }
 
 
@@ -322,6 +359,7 @@ define([],
             , bind : _bindToRecord
             , addTemplate : _addTemplate
             , getTemplate : _lookupTemplate
+            , addConditionalsMap: _addConditionalsMap
         };
     }
 );
