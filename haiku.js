@@ -49,6 +49,11 @@ define([],
 
         function _supplant(str, args, defaultVal) {
         // adapted from Douglas Crockford's Remedial JavaScript
+            if ((str.indexOf("%self") > -1) && args) {
+                // special case: if the expression includes the special string "%self", 
+                // it should be replaced by the entire (stringified) value of 'args'
+                str = str.replace(/%self/g, args.toString());
+            }
             return str.replace(/\$([^$]*);/g,
                 function (a, b) {
                     var r = args[b] || defaultVal,
@@ -315,8 +320,13 @@ define([],
             var value, valueStr;
 
             if (fieldName === "%self") {
-                valueStr = nd.getAttribute("data-value-string");
-                _setNodeValue(nd, _expandValueString(valueStr, record));
+                if (nd.hasAttribute("data-value-string")) {
+                    valueStr = nd.getAttribute("data-value-string");
+                    _setNodeValue(nd, _expandValueString(valueStr, record));
+                
+                } else if (typeof record !== "object") {
+                    _setNodeValue(nd, record);
+                }
 
             } else {
 
