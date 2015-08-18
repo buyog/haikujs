@@ -304,7 +304,7 @@ define([],
                     }
                 }
             } else {
-                console.warn("Data children binding: '" + fieldName + "' not found.");
+                // console.warn("Data children binding: '" + fieldName + "' not found.");
             }
 
             if (nd.hasAttribute("data-children-footer")) {
@@ -336,7 +336,7 @@ define([],
                         _setNodeValue(nd, value);
                     }
                 } else {
-                    console.warn("Data binding: '" + fieldName + "' ");
+                    // console.warn("Data binding: '" + fieldName + "' ");
                 }
             }
         }
