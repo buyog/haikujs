@@ -99,7 +99,7 @@ define([],
 
         function _sanitizeData(obj, depthLimit) {
             var sanitized = null;
-            if (!obj) return null;
+            if (obj===null || obj===undefined) return null;
             if (obj.__SANITIZED) return obj;
             if (Array.isArray(obj)) {
                 sanitized = [];
