@@ -56,9 +56,10 @@ define([],
             }
             return str.replace(/\$([^$]*);/g,
                 function (a, b) {
-                    var r = args[b] || defaultVal,
-                        rtype = typeof r;
-                    return rtype === 'string' || rtype === 'number' ? r : "("+rtype+")";
+                    var r = args[b];
+                    if (_isNullOrUndef(r)) r = defaultVal;
+                    var rtype = typeof r;
+                    return rtype === "string" || rtype === "number" ? r : "("+rtype+")";
                 }
             );
         }
@@ -97,9 +98,13 @@ define([],
             return working.replace(/__CLOSEBRACKET__/gi, "]");
         }
 
+        function _isNullOrUndef(o) {
+            return (o===null || o===undefined);
+        }
+
         function _sanitizeData(obj, depthLimit) {
             var sanitized = null;
-            if (obj===null || obj===undefined) return null;
+            if (_isNullOrUndef(obj)) return null;
             if (obj.__SANITIZED) return obj;
             if (Array.isArray(obj)) {
                 sanitized = [];
