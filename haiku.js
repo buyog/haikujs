@@ -114,7 +114,7 @@ define([],
             } else {
                 switch (typeof obj) {
                     case "string":
-                        sanitized = _escapeControlChars(obj);
+                        sanitized = _escapeControlChars(_stripHtml(obj));
                         break;
 
                     case "object":
@@ -138,6 +138,31 @@ define([],
             }
             return sanitized;
         }
+
+        // code for stripping all HTML tags from an input string
+        // taken from http://stackoverflow.com/a/430240/7542 
+        var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
+        var tagOrComment = new RegExp(
+            '<(?:'
+            // Comment body.
+            + '!--(?:(?:-*[^->])*--+|-?)'
+            // Special "raw text" elements whose content should be elided.
+            + '|script\\b' + tagBody + '>[\\s\\S]*?</script\\s*'
+            + '|style\\b' + tagBody + '>[\\s\\S]*?</style\\s*'
+            // Regular name
+            + '|/?[a-z]'
+            + tagBody
+            + ')>',
+            'gi');
+        function _stripHtml(html) {
+            var oldHtml;
+            do {
+                oldHtml = html;
+                html = html.replace(tagOrComment, '');
+            } while (html !== oldHtml);
+            return html.replace(/</g, '&lt;');
+        }
+        // end of html tag stripper
 
         function _expandValueString(valueStr, data) {
             if (!valueStr || !data) return null;
