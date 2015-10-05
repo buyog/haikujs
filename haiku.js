@@ -64,6 +64,24 @@ define([],
             );
         }
 
+        /** Mixes attributes from one object into another.
+         *    Useful for overriding function defaults with an arguments property bag
+         *
+         * @param intoObj: target object to receive the new stuff
+         * @param fromObj: source object to provide the new stuff
+         * @return: the modified object
+         */
+        function _mixin(intoObj, fromObj) {
+            for (var k in fromObj) {
+                if (fromObj.hasOwnProperty(k)) {
+                    if (fromObj[k] !== undefined) intoObj[k] = fromObj[k];
+                }
+            }
+            return intoObj;
+        }
+
+
+
         function _setNodeValue(node, value) {
             if (!node) return new Error("setNodeValue :: No node specified.");
 
@@ -143,16 +161,16 @@ define([],
         // taken from http://stackoverflow.com/a/430240/7542 
         var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
         var tagOrComment = new RegExp(
-            '<(?:'
+            '<(?:' +
             // Comment body.
-            + '!--(?:(?:-*[^->])*--+|-?)'
+            '!--(?:(?:-*[^->])*--+|-?)' +
             // Special "raw text" elements whose content should be elided.
-            + '|script\\b' + tagBody + '>[\\s\\S]*?</script\\s*'
-            + '|style\\b' + tagBody + '>[\\s\\S]*?</style\\s*'
+            '|script\\b' + tagBody + '>[\\s\\S]*?</script\\s*' +
+            '|style\\b' + tagBody + '>[\\s\\S]*?</style\\s*' +
             // Regular name
-            + '|/?[a-z]'
-            + tagBody
-            + ')>',
+            '|/?[a-z]' +
+            tagBody +
+            ')>',
             'gi');
         function _stripHtml(html) {
             var oldHtml;
@@ -303,9 +321,40 @@ define([],
             return _lookupTemplate(map.defaultTemplate) || null;
         }
 
+        function _evaluateTemplateContext(contextString) {
+            // context e.g. "id:123|groupId:456"
+            var contextDict = {};
+
+            if (contextString) contextString.split("|").forEach(function(argPair) {
+                var keyval = argPair.split(":");
+                contextDict[keyval[0]] = keyval[1];
+            });
+            return contextDict;
+        }
+
+        function _getBindingContext(containerContext, childObject) {
+            var compositeContext = null;
+            if (!containerContext) return childObject;
+
+            if (childObject) {
+                if (typeof childObject == "object") {
+                    compositeContext = _mixin((containerContext || {}), childObject);
+
+                } else {
+                    compositeContext = childObject;
+                }
+            }
+
+            return compositeContext;
+        }
+
         function _bindChildNodes(nd, record) {
             var fieldName = nd.getAttribute("data-children-binding");
-            var i, tmpl, value, fragment;
+            var i, tmpl, value, fragment, containerContext, bindingContext;
+            if (nd.hasAttribute("data-template-context")) {
+                containerContext = _evaluateTemplateContext(nd.getAttribute("data-template-context"), record);
+            }
+
             if (fieldName && record.hasOwnProperty(fieldName)) {
                 value = record[fieldName];
                 if (value && value.length !== undefined) {
@@ -315,7 +364,8 @@ define([],
                         if (tmpl) {
                             nd.innerHTML = "";
                             for (i=0; i<value.length; i++) {
-                                fragment = _createElement(tmpl, value[i]);
+                                bindingContext = _getBindingContext(containerContext, value[i]);
+                                fragment = _createElement(tmpl, bindingContext);
                                 nd.appendChild( fragment );
                                 _bindToRecord(fragment, value[i]);
                             }
@@ -324,9 +374,10 @@ define([],
                     } else if (nd.hasAttribute("data-template-map")) {
                         var tmplMap = nd.getAttribute("data-template-map");
                         for (i=0; i<value.length; i++) {
-                            tmpl = _lookupTemplateByMap(tmplMap, value[i]);
+                            bindingContext = _getBindingContext(containerContext, value[i]);
+                            tmpl = _lookupTemplateByMap(tmplMap, bindingContext);
                             if (tmpl) {
-                                fragment = _createElement(tmpl, value[i]);
+                                fragment = _createElement(tmpl, bindingContext);
                                 nd.appendChild( fragment );
                                 _bindToRecord(fragment, value[i]);
                             }
