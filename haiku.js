@@ -355,6 +355,15 @@ define([],
                 containerContext = _evaluateTemplateContext(nd.getAttribute("data-template-context"), record);
             }
 
+            nd.innerHTML = "";
+            
+            if (nd.hasAttribute("data-children-prelude")) {
+                tmpl = _lookupTemplate(nd.getAttribute("data-children-prelude"));
+                if (tmpl) {
+                    nd.appendChild( _createElement(tmpl, record) );
+                }
+            }
+
             if (fieldName && record.hasOwnProperty(fieldName)) {
                 value = record[fieldName];
                 if (value && value.length !== undefined) {
@@ -362,7 +371,6 @@ define([],
                         tmpl = _lookupTemplate(nd.getAttribute("data-template"));
 
                         if (tmpl) {
-                            nd.innerHTML = "";
                             for (i=0; i<value.length; i++) {
                                 bindingContext = _getBindingContext(containerContext, value[i]);
                                 fragment = _createElement(tmpl, bindingContext);
