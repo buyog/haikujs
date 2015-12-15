@@ -362,7 +362,10 @@ define([],
             if (nd.hasAttribute("data-children-prelude")) {
                 tmpl = _lookupTemplate(nd.getAttribute("data-children-prelude"));
                 if (tmpl) {
-                    nd.appendChild( _createElement(tmpl, record) );
+                    bindingContext = _getBindingContext(containerContext, record);
+                    fragment = _createElement(tmpl, bindingContext);
+                    nd.appendChild( fragment );
+                    _bindToRecord(fragment, bindingContext);
                 }
             }
 
@@ -377,7 +380,7 @@ define([],
                                 bindingContext = _getBindingContext(containerContext, value[i]);
                                 fragment = _createElement(tmpl, bindingContext);
                                 nd.appendChild( fragment );
-                                _bindToRecord(fragment, value[i]);
+                                _bindToRecord(fragment, bindingContext);
                             }
                         }
 
@@ -389,7 +392,7 @@ define([],
                             if (tmpl) {
                                 fragment = _createElement(tmpl, bindingContext);
                                 nd.appendChild( fragment );
-                                _bindToRecord(fragment, value[i]);
+                                _bindToRecord(fragment, bindingContext);
                             }
                         }
                     }
@@ -401,7 +404,10 @@ define([],
             if (nd.hasAttribute("data-children-footer")) {
                 tmpl = _lookupTemplate(nd.getAttribute("data-children-footer"));
                 if (tmpl) {
-                    nd.appendChild( _createElement(tmpl, record) );
+                    bindingContext = _getBindingContext(containerContext, record);
+                    fragment = _createElement(tmpl, bindingContext);
+                    nd.appendChild( fragment );
+                    _bindToRecord(fragment, bindingContext);
                 }
             }
         }
