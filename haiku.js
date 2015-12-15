@@ -305,7 +305,9 @@ define([],
         }
 
         function _lookupTemplate(templateId) {
-            return _templateMap[templateId] || null;
+            var tmpl = _templateMap[templateId];
+            if (!tmpl) console.warn("Haiku: Cannot find named template '" + templateId + "'");
+            return tmpl || null;
         }
 
         function _lookupTemplateByMap(mapId, record) {
