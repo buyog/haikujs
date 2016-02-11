@@ -3,7 +3,7 @@
 //   (see http://code.google.com/p/zen-coding/)
 //
 // author: Ryan Corradini
-// last update: 4 June 2015
+// last update: 11 February 2016
 // license: MIT
 //
 
@@ -81,6 +81,36 @@ define([],
         }
 
 
+        function toArray(arraylike) {
+            return arraylike && [].slice.call(arraylike);
+        }
+
+        function _each(arraylike, fn) {
+            if (arraylike && fn) [].forEach.call(arraylike, fn);
+        }
+
+        function _filter(arraylike, fn) {
+            return (arraylike && fn) ? [].filter.call(arraylike, fn) : null;
+        }
+
+        function _map(arraylike, fn) {
+            return (arraylike && fn) ? [].map.call(arraylike, fn) : null;
+        }
+
+        /**
+         * Return an array with those elements present in 
+         * input array, but not in blacklist array
+         * @param  {Array} array     [collection of values to filter]
+         * @param  {Array} blacklist [array of values to exclude]
+         * @return {Array}           [a smaller array, elements from input not in blacklist]
+         */
+        function _arrayDiff(input, blacklist) {
+            var A = (Array.isArray(input) ? input : toArray(input));
+            var B = (Array.isArray(blacklist) ? blacklist : toArray(blacklist));
+            return A.filter(function(value){
+                return B.indexOf(value) == -1;
+            });
+        }
 
         function _setNodeValue(node, value) {
             if (!node) return new Error("setNodeValue :: No node specified.");
@@ -436,6 +466,8 @@ define([],
                     // console.warn("Data binding: '" + fieldName + "' ");
                 }
             }
+
+            return nd;
         }
 
         function _bindToRecord(view, record) {
@@ -443,13 +475,37 @@ define([],
 
             if (!view || !record) return;
 
+            // mark every bound element as "pending" (so things only get touched once)
+            bindings = view.querySelectorAll("[data-binding]");
+            _each(bindings, _markPending);
+
             // data-children-binding (templatized child nodes, bound to an array)
             bindings = view.querySelectorAll("[data-children-binding]");
-            Array.prototype.forEach.call(bindings, function(nd) { _bindChildNodes(nd, record); });
+            _each(bindings, function(nd) { _bindChildNodes(nd, record); });
 
-            // data-binding (single node values)
+            // data-binding (single node values; non-subordinate only)
             bindings = view.querySelectorAll("[data-binding]");
-            Array.prototype.forEach.call(bindings, function(nd) { _bindField(nd, record); });
+            _each(
+                _map(
+                    _filter(bindings, _onlyPending)
+                    , function(nd) { return _bindField(nd, record); }
+                )
+                , _clearPending
+            );
+        }
+
+        function _markPending(node) {
+            if (node && node.setAttribute) node.setAttribute("data-binding-pending", true);
+            return node;
+        }
+
+        function _clearPending(node) {
+            if (node && node.removeAttribute) node.removeAttribute("data-binding-pending");
+            return node;
+        }
+
+        function _onlyPending(node) {
+            return (node && node.getAttribute) ? node.getAttribute("data-binding-pending") : false;
         }
 
         function _addConditionalsMap(name, map) {
