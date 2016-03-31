@@ -119,7 +119,7 @@ define([],
                 case "INPUT":
                 case "TEXTAREA":
                 case "SELECT":
-                    if (node.type === "checkbox") {
+                    if (node.type === "checkbox" || node.type === "radio") {
                         node.checked = value;
                     } else {
                         node.value = value;
