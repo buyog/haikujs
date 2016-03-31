@@ -320,6 +320,7 @@ define([],
 
         function _createElement(expression, dataObj) {
             var expanded = _expand(expression, dataObj);
+            _bindToRecord(expanded, dataObj);
             return (expanded && expanded.childNodes.length) ? expanded.childNodes[0] : null;
         }
 
@@ -395,7 +396,6 @@ define([],
                     bindingContext = _getBindingContext(containerContext, record);
                     fragment = _createElement(tmpl, bindingContext);
                     nd.appendChild( fragment );
-                    _bindToRecord(fragment, bindingContext);
                 }
             }
 
@@ -410,7 +410,6 @@ define([],
                                 bindingContext = _getBindingContext(containerContext, value[i]);
                                 fragment = _createElement(tmpl, bindingContext);
                                 nd.appendChild( fragment );
-                                _bindToRecord(fragment, bindingContext);
                             }
                         }
 
@@ -422,7 +421,6 @@ define([],
                             if (tmpl) {
                                 fragment = _createElement(tmpl, bindingContext);
                                 nd.appendChild( fragment );
-                                _bindToRecord(fragment, bindingContext);
                             }
                         }
                     }
@@ -437,7 +435,6 @@ define([],
                     bindingContext = _getBindingContext(containerContext, record);
                     fragment = _createElement(tmpl, bindingContext);
                     nd.appendChild( fragment );
-                    _bindToRecord(fragment, bindingContext);
                 }
             }
         }
