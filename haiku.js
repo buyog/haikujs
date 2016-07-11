@@ -2,8 +2,8 @@
 // Haiku.js: lightweight DOM node creation using Zen Coding syntax
 //   (see http://code.google.com/p/zen-coding/)
 //
-// author: Ryan Corradini
-// last update: 11 February 2016
+// author: Rylee Corradini
+// last update: 10 July 2016
 // license: MIT
 //
 
